@@ -1,0 +1,159 @@
+Routine Tracker — Dependencies & Setup
+======================================
+
+This file lists everything required to download, install, and run the application.
+
+
+SYSTEM REQUIREMENTS
+-------------------
+
+Required (all platforms):
+
+  Node.js          18.x or 20.x LTS (includes npm)
+  npm              9.x or 10.x (bundled with Node.js)
+  Git              To clone the repository
+
+Recommended:
+
+  Watchman         File watcher (macOS/Linux) — optional but improves Metro performance
+
+
+NPM PACKAGES (JavaScript / TypeScript)
+--------------------------------------
+
+Install all project dependencies from the repository root:
+
+  npm install
+
+This downloads packages listed in package.json:
+
+Production dependencies:
+  expo                          ~52.0.0
+  expo-sqlite                   ~15.1.4
+  expo-status-bar               ~2.0.1
+  react                         18.3.1
+  react-native                  0.76.9
+  @react-navigation/native      ^7.1.6
+  @react-navigation/bottom-tabs ^7.3.10
+  react-native-screens          ~4.4.0
+  react-native-safe-area-context 4.12.0
+
+Development dependencies:
+  typescript                    ~5.3.3
+  @types/react                  ~18.3.12
+  babel-plugin-module-resolver  ^5.0.2
+
+Transitive dependencies (installed automatically by npm):
+  All other packages under node_modules/ (Expo SDK, Metro bundler, etc.)
+
+
+ANDROID DEVELOPMENT (required for full app + home screen widget)
+----------------------------------------------------------------
+
+Expo Go does NOT include the custom Android widget. Use a dev build.
+
+Required tools:
+
+  Android Studio                Latest stable
+                                https://developer.android.com/studio
+
+  Android SDK                   Installed via Android Studio SDK Manager
+    - Android SDK Platform 34 or 35 (compile/target)
+    - Android SDK Build-Tools
+    - Android SDK Platform-Tools (adb)
+
+  Java Development Kit (JDK)    17 (recommended for React Native 0.76 / Expo 52)
+
+Environment variables (set after Android Studio install):
+
+  ANDROID_HOME                  Path to Android SDK
+  JAVA_HOME                     Path to JDK 17
+
+Native Android libraries (added automatically by expo prebuild + config plugin):
+
+  androidx.work:work-runtime-ktx  2.9.1   (WorkManager — widget background sync)
+
+Generate native Android project (required before first dev build):
+
+  npm run prebuild:android
+
+Build and run on device or emulator:
+
+  npx expo run:android
+
+
+IOS DEVELOPMENT (optional — widget is Android-only in V1)
+--------------------------------------------------------
+
+  Xcode                         Latest stable (macOS only)
+  Xcode Command Line Tools
+  CocoaPods                     For iOS native dependencies
+
+  npm run prebuild              Generate ios/ folder
+  npx expo run:ios                Build and run on simulator/device
+
+Note: Home screen widget native code is Android-only. iOS app tabs work without widget.
+
+
+QUICK START (Android — recommended)
+-----------------------------------
+
+  1. Install Node.js 18+ and npm
+  2. Install Android Studio + SDK + JDK 17
+  3. Clone repository
+  4. cd RoutineTracker
+  5. npm install
+  6. npm run validate:plugin       (optional — verify Expo config plugin loads)
+  7. npm run prebuild:android      (generates android/ with widget native code)
+  8. npx expo run:android          (installs dev build on device/emulator)
+
+
+QUICK START (JavaScript only — limited)
+---------------------------------------
+
+  npm install
+  npm start
+
+Opens Expo dev server. Useful for Metro bundler only.
+
+Limitations without dev build:
+  - Custom Android widget will NOT work
+  - NativeModules.RoutineTrackerWidget will be unavailable
+  - Use expo run:android after prebuild for full functionality
+
+
+USEFUL NPM SCRIPTS
+------------------
+
+  npm start                 Start Expo dev server
+  npm run android           Start dev server and open Android (Expo Go — widget limited)
+  npm run ios               Start dev server and open iOS
+  npm run prebuild          Generate android/ and ios/ native projects
+  npm run prebuild:android  Generate android/ only (clean)
+  npm run validate:plugin   Verify widget config plugin loads
+
+
+EXTERNAL SERVICES
+-----------------
+
+  None. The app is offline-only (local SQLite). No accounts, cloud, or API keys.
+
+
+DISK SPACE (approximate)
+------------------------
+
+  node_modules/             ~400–800 MB
+  Android SDK               ~2–5 GB
+  Android build artifacts   ~500 MB–1 GB per build
+  ios/ build (if used)      ~2+ GB
+
+
+VERSION PIN SUMMARY
+-------------------
+
+  Expo SDK                    52
+  React Native                0.76.9
+  React                       18.3.1
+  TypeScript                  5.3.x
+  Android package name        com.routinetracker.app
+  iOS bundle identifier       com.routinetracker.app
