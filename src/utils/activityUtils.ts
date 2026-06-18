@@ -1,7 +1,7 @@
 import type { Activity } from '@/types';
 import { ActivityFrequency, ActivityResult, ActivityStatus } from '@/types';
 
-import { parseTimeOnDate, toDateString } from './dateUtils';
+import { parseTimeOnDate, toDateString, toDateStringFromIso } from './dateUtils';
 
 const STATUS_SORT_ORDER: Record<ActivityStatus, number> = {
   [ActivityStatus.Missed]: 0,
@@ -84,15 +84,25 @@ export function calculateStatus(
  * - One-time `oneTimeDate: "2026-07-10"`, checked on 2026-07-09 → `false`
  */
 export function isDueToday(activity: Activity, currentDate: Date = new Date()): boolean {
+  const creationDate = toDateStringFromIso(activity.createdAt);
+
   switch (activity.frequency) {
     case ActivityFrequency.Daily:
-      return true;
+      return toDateString(currentDate) >= creationDate;
 
     case ActivityFrequency.Weekly:
-      return activity.weekDay !== null && currentDate.getDay() === activity.weekDay;
+      return (
+        activity.weekDay !== null &&
+        currentDate.getDay() === activity.weekDay &&
+        toDateString(currentDate) >= creationDate
+      );
 
     case ActivityFrequency.Monthly:
-      return activity.monthDay !== null && currentDate.getDate() === activity.monthDay;
+      return (
+        activity.monthDay !== null &&
+        currentDate.getDate() === activity.monthDay &&
+        toDateString(currentDate) >= creationDate
+      );
 
     case ActivityFrequency.OneTime:
       return activity.oneTimeDate !== null && activity.oneTimeDate === toDateString(currentDate);
@@ -100,6 +110,59 @@ export function isDueToday(activity: Activity, currentDate: Date = new Date()): 
     default:
       return false;
   }
+}
+
+export type ActivityVisibilityContext = {
+  hasLogForToday: boolean;
+  hasCompletionLog: boolean;
+};
+
+/**
+ * Applies the full visibility pipeline from BUSINESS_LOGIC.md.
+ * Do not use isDueToday alone for display decisions.
+ */
+export function isActivityVisible(
+  activity: Activity,
+  currentDate: Date = new Date(),
+  context: ActivityVisibilityContext,
+): boolean {
+  if (!activity.active) {
+    return false;
+  }
+
+  if (activity.frequency === ActivityFrequency.OneTime) {
+    if (activity.oneTimeDate === null) {
+      return false;
+    }
+
+    if (toDateString(currentDate) < activity.oneTimeDate) {
+      return false;
+    }
+
+    return !context.hasCompletionLog;
+  }
+
+  if (toDateString(currentDate) < toDateStringFromIso(activity.createdAt)) {
+    return false;
+  }
+
+  if (!isDueToday(activity, currentDate)) {
+    return false;
+  }
+
+  return !context.hasLogForToday;
+}
+
+/**
+ * Determines whether an activity was scheduled for a specific cycle date.
+ * Used by cycle-close backfill.
+ */
+export function isScheduledForCycleDate(activity: Activity, cycleDate: Date): boolean {
+  if (activity.frequency === ActivityFrequency.OneTime) {
+    return activity.oneTimeDate !== null && activity.oneTimeDate === toDateString(cycleDate);
+  }
+
+  return isDueToday(activity, cycleDate);
 }
 
 /**
@@ -173,7 +236,12 @@ export function sortActivities(
       const dueB = parseTimeOnDate(b.activity.dueTime, currentTime);
       const dueDiff = dueA.getTime() - dueB.getTime();
 
-      return dueDiff !== 0 ? dueDiff : a.index - b.index;
+      if (dueDiff !== 0) {
+        return dueDiff;
+      }
+
+      const titleDiff = a.activity.title.localeCompare(b.activity.title);
+      return titleDiff !== 0 ? titleDiff : a.index - b.index;
     })
     .map(({ activity }) => activity);
 }

@@ -4,16 +4,22 @@ import { Colors } from '@/constants';
 
 type ActivityCheckboxProps = {
   checked?: boolean;
+  disabled?: boolean;
   onPress?: () => void;
 };
 
-export function ActivityCheckbox({ checked = false, onPress }: ActivityCheckboxProps) {
+export function ActivityCheckbox({
+  checked = false,
+  disabled = false,
+  onPress,
+}: ActivityCheckboxProps) {
   return (
     <Pressable
       accessibilityRole="checkbox"
-      accessibilityState={{ checked }}
+      accessibilityState={{ checked, disabled }}
+      disabled={disabled}
       onPress={onPress}
-      style={[styles.checkbox, checked && styles.checked]}
+      style={[styles.checkbox, checked && styles.checked, disabled && styles.disabled]}
     />
   );
 }
@@ -30,5 +36,8 @@ const styles = StyleSheet.create({
   checked: {
     backgroundColor: Colors.primary,
     borderColor: Colors.primary,
+  },
+  disabled: {
+    opacity: 0.5,
   },
 });

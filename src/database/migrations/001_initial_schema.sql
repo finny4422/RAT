@@ -1,8 +1,7 @@
 -- Migration 001: initial_schema
 -- Routine Accountability Tracker — Phase 2 Database Design
--- Source of truth: PROJECT_SPEC.md, DATABASE_SCHEMA.md, BUSINESS_LOGIC.md
-
-PRAGMA foreign_keys = ON;
+-- Idempotent: all DDL uses IF NOT EXISTS.
+-- Version tracking row is inserted by the migration runner.
 
 -- ---------------------------------------------------------------------------
 -- Schema version tracking

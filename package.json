@@ -5,7 +5,10 @@
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
-    "ios": "expo start --ios"
+    "ios": "expo start --ios",
+    "prebuild": "expo prebuild",
+    "prebuild:android": "expo prebuild --platform android --clean",
+    "validate:plugin": "node -e \"require('./plugins/withRoutineTrackerWidget/app.plugin.js'); console.log('plugin ok')\""
   },
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.3.10",

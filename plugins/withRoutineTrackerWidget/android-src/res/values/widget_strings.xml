@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="widget_name">Routine Tracker</string>
+  <string name="widget_empty">No activities require action today.</string>
+  <string name="widget_complete">Complete activity</string>
+</resources>

@@ -8,4 +8,8 @@ export interface ActivityLog {
   frequency: ActivityFrequency;
   completedAt: string | null;
   result: ActivityResult;
+  reportId: string | null;
+  createdAt: string;
 }
+
+export type CreateActivityLogInput = Omit<ActivityLog, 'id' | 'reportId' | 'createdAt'>;

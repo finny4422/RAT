@@ -5,6 +5,7 @@ export type GeneratedReport = Omit<Report, 'id'>;
 
 const WEEKLY_REPORT_LOG_COUNT = 7;
 const MONTHLY_REPORT_LOG_COUNT = 4;
+const YEARLY_REPORT_LOG_COUNT = 12;
 
 /**
  * Calculates the accountability score from cycle results.
@@ -66,7 +67,7 @@ function aggregateLogsToReport(
     onTime,
     late,
     missed,
-    score: calculateScore(onTime, late, missed),
+    score: Math.round(calculateScore(onTime, late, missed) * 100) / 100,
   };
 }
 
@@ -121,4 +122,11 @@ export function generateWeeklyReport(activityLogs: ActivityLog[]): GeneratedRepo
  */
 export function generateMonthlyReport(activityLogs: ActivityLog[]): GeneratedReport | null {
   return aggregateLogsToReport(activityLogs, ReportType.Monthly, MONTHLY_REPORT_LOG_COUNT);
+}
+
+/**
+ * Builds a yearly report for a monthly activity from exactly 12 activity logs.
+ */
+export function generateYearlyReport(activityLogs: ActivityLog[]): GeneratedReport | null {
+  return aggregateLogsToReport(activityLogs, ReportType.Yearly, YEARLY_REPORT_LOG_COUNT);
 }

@@ -444,6 +444,18 @@ The widget auto-refreshes on a schedule, **every 15 minutes**, so status colors 
 
 The widget also refreshes immediately after any completion action.
 
+**Frozen rule (V1):** Every widget refresh trigger runs the full lifecycle sync before updating the widget snapshot:
+
+1. Cycle close backfill
+2. Report generation
+3. Widget snapshot refresh (top 2 visible activities)
+
+Triggers: app open, widget added, phone reboot, date changed (midnight), periodic background sync, and completion.
+
+The widget UI reads a persisted snapshot; `AppLifecycleService` owns correctness.
+
+**Frozen invariant:** WidgetSnapshot must never be generated from stale lifecycle state. Snapshot generation is blocked unless cycle close succeeds (snapshot gate).
+
 ## Completion
 
 Users can complete activities directly from the widget **without opening the app**.

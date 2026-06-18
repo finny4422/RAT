@@ -9,12 +9,14 @@ import { ActivityCheckbox } from './ActivityCheckbox';
 type ActivityCardProps = {
   activity: Activity;
   status?: ActivityStatus;
+  disabled?: boolean;
   onComplete?: () => void;
 };
 
 export function ActivityCard({
   activity,
   status = ActivityStatus.Pending,
+  disabled = false,
   onComplete,
 }: ActivityCardProps) {
   return (
@@ -24,7 +26,7 @@ export function ActivityCard({
         <Text style={styles.caption}>{activity.caption}</Text>
         <Text style={styles.dueTime}>{activity.dueTime}</Text>
       </View>
-      <ActivityCheckbox onPress={onComplete} />
+      <ActivityCheckbox disabled={disabled} onPress={onComplete} />
     </View>
   );
 }
@@ -34,8 +36,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    width: '100%',
     padding: 16,
-    borderRadius: 8,
     borderWidth: 1,
     borderColor: Colors.border,
     marginBottom: 12,

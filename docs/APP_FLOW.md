@@ -19,7 +19,7 @@ For each active activity + each missed scheduled date:
     ↓
 Evaluate report thresholds for activities with new logs
     ↓
-Load Activities screen / refresh widget
+Refresh widget snapshot (top 2 visible activities)
 ```
 
 ---
@@ -104,7 +104,9 @@ Check report threshold (next N unreported logs)
     ↓
 If threshold met → generate report → mark logs as reported
     ↓
-Refresh widget immediately
+Run full lifecycle sync (trigger: completion)
+    ↓
+Refresh Activities screen
 ```
 
 ---
@@ -133,7 +135,7 @@ One-time:
     ↓
 Evaluate report thresholds
     ↓
-Refresh widget
+Full lifecycle sync (when triggered from background or app)
 ```
 
 ---
@@ -164,23 +166,44 @@ One-time activities do not enter this flow.
 
 ## 8. Widget Flow
 
+**Frozen rule (V1):** Any widget refresh trigger MUST execute the full lifecycle sync in this order:
+
+1. `runCycleCloseBackfill()`
+2. `runReportGeneration()`
+3. `refreshWidgetSnapshot()`
+
+**Frozen invariant:** WidgetSnapshot must never be generated from stale lifecycle state. If cycle close fails, the snapshot gate stays closed and no snapshot is written.
+
+Widget refresh is a **mini app launch**. The widget UI never owns correctness logic.
+
 ```
-Widget reads shared local database
+Trigger (app open | widget added | phone reboot | date changed | periodic sync | completion)
     ↓
-Apply same visibility pipeline as Activities screen
+AppLifecycleService.runFullLifecycleSync(trigger)
     ↓
-Sort same way (Missed → Due Soon → Pending)
+Cycle close backfill
     ↓
-Show top 2 activities
+Report generation
     ↓
-Auto-refresh every 15 minutes
+Widget snapshot refresh (top 2 visible activities, same visibility + sort as Activities tab)
     ↓
-User completes from widget (no app open required)
-    ↓
-Same completion logic as §5
-    ↓
-Immediate widget refresh
+WidgetBridge persists snapshot → native widget UI renders
 ```
+
+Android V1 triggers:
+
+| Trigger | When |
+|---------|------|
+| `app_open` | App launch after database bootstrap |
+| `widget_added` | User adds home screen widget |
+| `phone_reboot` | Device boot completed |
+| `date_changed` | Local midnight rollover |
+| `periodic_sync` | WorkManager (~15 minutes) |
+| `completion` | Activity completed from app or widget |
+
+Widget display fields: Title, Due Time, Checkbox, status background color.
+
+User completes from widget (no app open required) → same completion logic as §5 → lifecycle sync with `completion` trigger.
 
 ---
 
@@ -208,5 +231,5 @@ Create Activity
     → [Midnight, no completion] → MISSED log → hide (recurring) or stay (one-time)
     → [One-time late complete] → update MISSED → LATE → hide → deactivate
     → Reports accumulate from logs → displayed permanently
-    → Widget mirrors Activities (top 2, 15-min refresh)
+    → Widget: full lifecycle sync → snapshot (top 2, periodic + triggers)
 ```

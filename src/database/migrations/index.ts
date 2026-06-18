@@ -15,3 +15,14 @@ export const migrations: Migration[] = [
     sql: readMigration001(),
   },
 ];
+
+export { runMigrations, splitSqlStatements } from './runner';
+export type { MigrationRunResult } from './runner';
+export {
+  getAppliedMigrations,
+  getAppliedVersions,
+  getLatestAppliedVersion,
+  recordMigrationApplied,
+  verifyDatabaseVersion,
+} from './version';
+export type { AppliedMigration } from './version';

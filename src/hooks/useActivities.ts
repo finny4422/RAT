@@ -1,12 +1,162 @@
-import type { Activity } from '@/types';
+import { useCallback, useState } from 'react';
+
+import {
+  activityLogService,
+  activityService,
+  appLifecycleService,
+  type VisibleActivity,
+} from '@/services';
+
+type UseActivitiesState = {
+  activities: VisibleActivity[];
+  isLoading: boolean;
+  isRefreshing: boolean;
+  error: string | null;
+  completingId: string | null;
+};
+
+function visibleActivitiesEqual(
+  current: VisibleActivity[],
+  next: VisibleActivity[],
+): boolean {
+  if (current.length !== next.length) {
+    return false;
+  }
+
+  return current.every((item, index) => {
+    const other = next[index];
+    const activity = item.activity;
+    const otherActivity = other.activity;
+
+    return (
+      item.status === other.status &&
+      activity.id === otherActivity.id &&
+      activity.title === otherActivity.title &&
+      activity.caption === otherActivity.caption &&
+      activity.dueTime === otherActivity.dueTime
+    );
+  });
+}
 
 export function useActivities() {
-  const activities: Activity[] = [];
+  const [state, setState] = useState<UseActivitiesState>({
+    activities: [],
+    isLoading: true,
+    isRefreshing: false,
+    error: null,
+    completingId: null,
+  });
+
+  const loadActivities = useCallback(async (mode: 'initial' | 'refresh') => {
+    setState((current: UseActivitiesState) => ({
+      ...current,
+      isLoading: mode === 'initial' ? true : current.isLoading,
+      isRefreshing: mode === 'refresh',
+      error: null,
+    }));
+
+    try {
+      const activities = await activityService.getTodaysVisibleActivities();
+
+      setState((current: UseActivitiesState) => {
+        if (visibleActivitiesEqual(current.activities, activities)) {
+          return {
+            ...current,
+            isLoading: false,
+            isRefreshing: false,
+            error: null,
+          };
+        }
+
+        return {
+          ...current,
+          activities,
+          isLoading: false,
+          isRefreshing: false,
+          error: null,
+        };
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to load activities.';
+
+      setState((current: UseActivitiesState) => ({
+        ...current,
+        isLoading: false,
+        isRefreshing: false,
+        error: message,
+      }));
+    }
+  }, []);
+
+  const refresh = useCallback(async () => {
+    await loadActivities('refresh');
+  }, [loadActivities]);
+
+  const silentRefresh = useCallback(async () => {
+    try {
+      const activities = await activityService.getTodaysVisibleActivities();
+
+      setState((current: UseActivitiesState) => {
+        if (visibleActivitiesEqual(current.activities, activities)) {
+          return current;
+        }
+
+        return {
+          ...current,
+          activities,
+        };
+      });
+    } catch {
+      // Background poll failures should not disturb the current UI state.
+    }
+  }, []);
+
+  const loadInitial = useCallback(async () => {
+    await loadActivities('initial');
+  }, [loadActivities]);
+
+  const completeActivity = useCallback(
+    async (activityId: string) => {
+      setState((current: UseActivitiesState) => ({
+        ...current,
+        completingId: activityId,
+        error: null,
+      }));
+
+      try {
+        await activityLogService.recordCompletion(activityId);
+        await appLifecycleService.runFullLifecycleSync('completion');
+        await loadActivities('refresh');
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Failed to complete activity.';
+
+        setState((current: UseActivitiesState) => ({
+          ...current,
+          completingId: null,
+          error: message,
+        }));
+
+        await loadActivities('refresh');
+        return;
+      }
+
+      setState((current: UseActivitiesState) => ({
+        ...current,
+        completingId: null,
+      }));
+    },
+    [loadActivities],
+  );
 
   return {
-    activities,
-    isLoading: false,
-    error: null,
-    refresh: async () => {},
+    activities: state.activities,
+    isLoading: state.isLoading,
+    isRefreshing: state.isRefreshing,
+    error: state.error,
+    completingId: state.completingId,
+    refresh,
+    silentRefresh,
+    loadInitial,
+    completeActivity,
   };
 }

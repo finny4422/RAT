@@ -1,11 +1,12 @@
 /**
  * Migration 001 — initial schema SQL.
  * Keep in sync with 001_initial_schema.sql
+ *
+ * Idempotent: all DDL uses IF NOT EXISTS.
+ * Version tracking row is inserted by the migration runner, not this script.
  */
 export function readMigration001(): string {
   return `
-PRAGMA foreign_keys = ON;
-
 CREATE TABLE IF NOT EXISTS schema_migrations (
   version     INTEGER PRIMARY KEY,
   name        TEXT    NOT NULL,

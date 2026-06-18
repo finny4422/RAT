@@ -8,6 +8,11 @@ export function toDateString(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+/** Returns the local calendar date (`YYYY-MM-DD`) from an ISO 8601 timestamp. */
+export function toDateStringFromIso(isoTimestamp: string): string {
+  return isoTimestamp.slice(0, 10);
+}
+
 /**
  * Returns true when two Date values fall on the same local calendar day.
  */
@@ -17,6 +22,19 @@ export function isSameDay(a: Date, b: Date): boolean {
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate()
   );
+}
+
+/** Parses a `YYYY-MM-DD` string into a local Date at midnight. */
+export function parseDateString(dateString: string): Date {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+/** Adds calendar days to a `YYYY-MM-DD` string and returns a new date string. */
+export function addDaysToDateString(dateString: string, days: number): string {
+  const date = parseDateString(dateString);
+  date.setDate(date.getDate() + days);
+  return toDateString(date);
 }
 
 /**

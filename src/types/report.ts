@@ -12,4 +12,5 @@ export interface Report {
   late: number;
   missed: number;
   score: number;
+  createdAt: string;
 }
