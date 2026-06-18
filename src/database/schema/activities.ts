@@ -12,4 +12,8 @@ export const ACTIVITIES_COLUMNS = {
   oneTimeDate: 'one_time_date',
   active: 'active',
   createdAt: 'created_at',
+  updatedAt: 'updated_at',
+  lastClosedDate: 'last_closed_date',
 } as const;
+
+export const ACTIVITY_FREQUENCIES = ['daily', 'weekly', 'monthly', 'one_time'] as const;

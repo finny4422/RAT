@@ -12,7 +12,12 @@ export interface Activity {
   oneTimeDate: string | null;
   active: boolean;
   createdAt: string;
+  updatedAt: string;
+  lastClosedDate: string | null;
 }
 
-export type CreateActivityInput = Omit<Activity, 'id' | 'createdAt'>;
+export type CreateActivityInput = Omit<
+  Activity,
+  'id' | 'createdAt' | 'updatedAt' | 'lastClosedDate'
+>;
 export type UpdateActivityInput = Partial<CreateActivityInput>;

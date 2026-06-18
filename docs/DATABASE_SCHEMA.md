@@ -25,6 +25,7 @@ Activity definitions. No task instances.
 | `one_time_date` | TEXT | NULL | `YYYY-MM-DD`, required for one-time |
 | `active` | INTEGER | NOT NULL, DEFAULT 1 | 1 = active, 0 = inactive |
 | `created_at` | TEXT | NOT NULL | ISO 8601 creation timestamp |
+| `updated_at` | TEXT | NOT NULL | ISO 8601 last edit timestamp |
 | `last_closed_date` | TEXT | NULL | Last date cycle close was processed (`YYYY-MM-DD`) |
 
 ### Notes
@@ -32,6 +33,7 @@ Activity definitions. No task instances.
 - Recurring activities visible from `created_at` date onward only.
 - One-time activities set `active = 0` after completion.
 - Activity edits do not rewrite historical logs (except one-time MISSED → LATE update).
+- `updated_at` is set on every edit; `created_at` is never changed.
 - `due_time` on the activity is the current definition; cycle-time due time is stored on logs.
 
 ---
@@ -46,6 +48,7 @@ One record per activity cycle. History of every scheduled occurrence.
 | `activity_id` | TEXT | NOT NULL, FK → Activities | Parent activity |
 | `date` | TEXT | NOT NULL | Cycle date (`YYYY-MM-DD`) |
 | `due_time` | TEXT | NOT NULL | Due time as it applied for this cycle (`HH:MM`) |
+| `frequency` | TEXT | NOT NULL, CHECK | Activity frequency frozen at cycle time |
 | `completed_at` | TEXT | NULL | ISO 8601 completion timestamp; null for MISSED |
 | `result` | TEXT | NOT NULL, CHECK | `ON_TIME`, `LATE`, `MISSED` |
 | `report_id` | TEXT | NULL, FK → Reports | Set when log is included in a report |
@@ -73,7 +76,7 @@ UNIQUE (activity_id, date)
 
 - MISSED logs created by cycle close at local midnight (or backfill on app open).
 - One-time MISSED logs may be updated to LATE when user completes late.
-- Logs store `due_time` at cycle time; not rewritten when activity is edited.
+- Logs store `due_time` and `frequency` at cycle time; not rewritten when activity is edited.
 - Unreported logs have `report_id = NULL`.
 
 ---
@@ -86,6 +89,8 @@ Immutable report snapshots. Never recalculated after creation.
 |--------|------|-------------|-------------|
 | `id` | TEXT | PRIMARY KEY | Unique identifier |
 | `activity_id` | TEXT | NOT NULL, FK → Activities | Parent activity |
+| `activity_title` | TEXT | NOT NULL | Title snapshot at report creation |
+| `activity_frequency` | TEXT | NOT NULL, CHECK | Frequency snapshot at report creation |
 | `report_type` | TEXT | NOT NULL, CHECK | `weekly`, `monthly`, `yearly` |
 | `start_date` | TEXT | NOT NULL | First log date in window (`YYYY-MM-DD`) |
 | `end_date` | TEXT | NOT NULL | Last log date in window (`YYYY-MM-DD`) |
@@ -109,6 +114,32 @@ Immutable report snapshots. Never recalculated after creation.
 - `start_date` / `end_date` derived from first and last log in the window.
 - One-time activities do not generate reports.
 - Included logs linked via `ActivityLogs.report_id`.
+- `activity_title` and `activity_frequency` preserve display context after activity edits.
+
+---
+
+## Activity Edit & Historical Correctness
+
+Per PROJECT_SPEC: edits apply to **future cycles only**. The schema preserves historical accuracy as follows:
+
+| Edit | Already-generated reports | Future report generation |
+|------|---------------------------|--------------------------|
+| **Title changed** | Accurate — `reports.activity_title` snapshot unchanged | New reports snapshot new title |
+| **Due time changed** | Accurate — scores based on `activity_logs.due_time` frozen at cycle time | New logs capture new due time |
+| **Frequency changed** | Accurate — immutable report snapshots | Old unreported logs (frozen `frequency`) complete old window; new logs use new frequency |
+
+### Report generation after frequency change
+
+```
+SELECT * FROM activity_logs
+WHERE activity_id = ?
+  AND report_id IS NULL
+  AND frequency = ?          -- match the frequency epoch being closed out
+ORDER BY date ASC
+LIMIT N
+```
+
+Example: activity changed daily → weekly with 3 unreported daily logs. Those 3 logs remain (`frequency = daily`) until 7 accumulate for a weekly report. New weekly logs accumulate separately toward a monthly report.
 
 ---
 
@@ -167,7 +198,11 @@ Alternative: a global `app_settings.last_closed_date` may be used instead of per
 
 | Change | Reason |
 |--------|--------|
+| Added `Activities.updated_at` | Track edits; future UI/audit support |
 | Added `Activities.last_closed_date` | Cycle close backfill support |
+| Added `ActivityLogs.frequency` | Freeze frequency at cycle time; correct report windows after edits |
+| Added `Reports.activity_title` | Preserve report display after title edits |
+| Added `Reports.activity_frequency` | Preserve report context after frequency edits |
 | Added `ActivityLogs.report_id` | Link logs to reports; prevent double-counting |
 | Added `ActivityLogs.created_at` | Audit and ordering |
 | Added `Reports.created_at` | Audit |
