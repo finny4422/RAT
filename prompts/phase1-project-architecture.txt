@@ -1,0 +1,53 @@
+Read PROJECT_SPEC.md and use it as the source of truth.
+
+I am building a React Native mobile application using:
+
+- Expo
+- TypeScript
+- React Navigation
+- SQLite
+
+Do NOT generate any business logic yet.
+
+Do NOT generate report calculations.
+
+Do NOT generate widget functionality.
+
+Do NOT generate database queries.
+
+Only create the project architecture.
+
+Provide:
+
+1. Folder structure
+2. File structure
+3. Screen structure
+4. Component structure
+5. Type definitions structure
+6. Service structure
+7. Database structure
+
+Requirements:
+
+The application contains exactly 3 tabs:
+
+- Activities
+- Create Activity
+- Reports
+
+Create a scalable but simple architecture.
+
+Avoid Redux.
+
+Use React Context if state management becomes necessary.
+
+The architecture should support:
+
+- Activities
+- Activity Logs
+- Reports
+- Widgets
+
+but should not implement them yet.
+
+Show the final folder tree and explain the responsibility of each folder.

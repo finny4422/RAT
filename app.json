@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "Routine Tracker",
+    "slug": "routine-tracker",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.routinetracker.app"
+    },
+    "android": {
+      "package": "com.routinetracker.app"
+    }
+  }
+}
