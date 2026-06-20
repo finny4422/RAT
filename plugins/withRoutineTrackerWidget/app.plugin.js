@@ -89,7 +89,18 @@ function ensureMainApplication(mainApplication) {
 }
 
 function withWidgetManifest(androidManifest) {
-  const application = AndroidConfig.Manifest.getMainApplicationOrThrow(androidManifest);
+  const application = androidManifest?.application?.[0];
+
+if (!application) {
+  console.log(
+    'DEBUG manifest structure:',
+    JSON.stringify(androidManifest, null, 2)
+  );
+
+  throw new Error(
+    'withRoutineTrackerWidget: Could not find <application> node in AndroidManifest.'
+  );
+}
   application.receiver = application.receiver ?? [];
   application.service = application.service ?? [];
 
@@ -171,13 +182,28 @@ function withWidgetManifest(androidManifest) {
     }
   }
 
-  AndroidConfig.Manifest.addUsesPermission(
-    androidManifest,
-    'android.permission.RECEIVE_BOOT_COMPLETED',
-  );
-  AndroidConfig.Manifest.addUsesPermission(androidManifest, 'android.permission.WAKE_LOCK');
+  androidManifest['uses-permission'] =
+  androidManifest['uses-permission'] || [];
 
-  return androidManifest;
+const permissions = [
+  'android.permission.RECEIVE_BOOT_COMPLETED',
+  'android.permission.WAKE_LOCK',
+];
+
+for (const permission of permissions) {
+  const exists = androidManifest['uses-permission'].some(
+    (item) => item.$?.['android:name'] === permission
+  );
+
+  if (!exists) {
+    androidManifest['uses-permission'].push({
+      $: {
+        'android:name': permission,
+      },
+    });
+  }
+}
+return androidManifest;
 }
 
 /** @type {import('expo/config-plugins').ConfigPlugin} */

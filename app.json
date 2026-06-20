@@ -14,7 +14,8 @@
       "package": "com.routinetracker.app"
     },
     "plugins": [
-      "./plugins/withRoutineTrackerWidget/app.plugin.js"
+      "./plugins/withRoutineTrackerWidget/app.plugin.js",
+      "expo-asset"
     ]
   }
 }
