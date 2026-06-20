@@ -16,11 +16,13 @@ class RoutineTrackerWidgetModule(
   @ReactMethod
   fun persistSnapshot(json: String, trigger: String, promise: Promise) {
     try {
+      android.util.Log.d("RoutineTrackerWidget", "persistSnapshot trigger=$trigger bytes=${json.length}")
       WidgetSnapshotStore.save(reactContext, json, trigger)
       RoutineTrackerWidgetUpdater.updateAllWidgets(reactContext)
       notifyDataMutated(trigger)
       promise.resolve(null)
     } catch (error: Exception) {
+      android.util.Log.e("RoutineTrackerWidget", "persistSnapshot failed trigger=$trigger", error)
       promise.reject("WIDGET_PERSIST_FAILED", error)
     }
   }

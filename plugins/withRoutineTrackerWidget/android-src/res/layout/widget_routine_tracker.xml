@@ -53,8 +53,7 @@
         android:layout_marginEnd="10dp"
         android:background="@drawable/widget_checkbox_outline"
         android:contentDescription="@string/widget_complete"
-        android:scaleType="center"
-        android:src="@android:color/transparent" />
+        android:scaleType="center" />
 
       <LinearLayout
         android:layout_width="0dp"
@@ -115,8 +114,7 @@
         android:layout_marginEnd="10dp"
         android:background="@drawable/widget_checkbox_outline"
         android:contentDescription="@string/widget_complete"
-        android:scaleType="center"
-        android:src="@android:color/transparent" />
+        android:scaleType="center" />
 
       <LinearLayout
         android:layout_width="0dp"

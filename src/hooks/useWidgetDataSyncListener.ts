@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { AppState, DeviceEventEmitter, NativeEventEmitter, NativeModules, Platform } from 'react-native';
 
-import { refreshDatabaseConnection } from '@/database';
 import { ACTIVITIES_CHANGED_EVENT } from '@/services/activityCompletion';
 import { widgetBridge, WIDGET_DATA_MUTATED_EVENT } from '@/services/widget/widgetBridge';
 
@@ -12,7 +11,7 @@ async function pollMutationVersionAndNotify(): Promise<void> {
 
   if (version > lastSeenMutationVersion) {
     lastSeenMutationVersion = version;
-    await refreshDatabaseConnection();
+    // WAL mode: re-query on the open singleton connection — do not close/reopen the DB.
     DeviceEventEmitter.emit(ACTIVITIES_CHANGED_EVENT, { source: 'mutation-version' });
   }
 }

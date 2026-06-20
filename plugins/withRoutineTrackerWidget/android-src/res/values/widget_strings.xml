@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="widget_name">Routine Tracker</string>
-  <string name="widget_header">TODAY\'S TO-DOS</string>
+  <string name="widget_header">TODAY&apos;S TO-DOS</string>
   <string name="widget_empty">No tasks for today</string>
   <string name="widget_complete">Complete activity</string>
 </resources>

@@ -32,6 +32,19 @@ export const widgetService: WidgetService = {
     const snapshot = await widgetService.buildWidgetSnapshot(currentTime);
     lastWidgetSnapshot = snapshot;
 
+    if (__DEV__) {
+      console.log('[widget] snapshot before persist', {
+        trigger,
+        activityCount: snapshot.activities.length,
+        activities: snapshot.activities.map((item) => ({
+          id: item.id,
+          title: item.title,
+          dueTime: item.dueTime,
+          status: item.status,
+        })),
+      });
+    }
+
     await widgetBridge.persistSnapshot(snapshot, trigger);
     await widgetBridge.reloadWidgetUI();
 

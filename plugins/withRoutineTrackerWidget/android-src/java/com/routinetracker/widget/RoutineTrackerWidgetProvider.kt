@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import com.routinetracker.app.R
@@ -21,17 +22,39 @@ class RoutineTrackerWidgetProvider : AppWidgetProvider() {
     appWidgetIds: IntArray,
   ) {
     for (appWidgetId in appWidgetIds) {
-      appWidgetManager.updateAppWidget(appWidgetId, buildRemoteViews(context))
+      try {
+        appWidgetManager.updateAppWidget(appWidgetId, buildRemoteViews(context))
+      } catch (error: Exception) {
+        Log.e(TAG, "onUpdate failed for widget $appWidgetId", error)
+        try {
+          appWidgetManager.updateAppWidget(appWidgetId, buildFallbackRemoteViews(context))
+        } catch (fallbackError: Exception) {
+          Log.e(TAG, "fallback widget update failed for widget $appWidgetId", fallbackError)
+        }
+      }
     }
   }
 
   companion object {
+    private const val TAG = "RoutineTrackerWidget"
+
     const val ACTION_COMPLETE = "com.routinetracker.app.widget.COMPLETE"
     const val EXTRA_ACTIVITY_ID = "activityId"
 
     fun buildRemoteViews(context: Context): RemoteViews {
+      return try {
+        buildRemoteViewsInternal(context)
+      } catch (error: Exception) {
+        Log.e(TAG, "buildRemoteViews failed", error)
+        buildFallbackRemoteViews(context)
+      }
+    }
+
+    private fun buildRemoteViewsInternal(context: Context): RemoteViews {
       val views = RemoteViews(context.packageName, R.layout.widget_routine_tracker)
       val activities = WidgetSnapshotStore.loadActivities(context)
+
+      Log.d(TAG, "render widget with ${activities.length()} activities")
 
       bindSlot(
         context,
@@ -67,6 +90,22 @@ class RoutineTrackerWidgetProvider : AppWidgetProvider() {
       return views
     }
 
+    private fun buildFallbackRemoteViews(context: Context): RemoteViews {
+      return try {
+        val views = RemoteViews(context.packageName, R.layout.widget_routine_tracker)
+        views.setViewVisibility(R.id.widget_slot_1, View.GONE)
+        views.setViewVisibility(R.id.widget_slot_2, View.GONE)
+        views.setViewVisibility(R.id.widget_header, View.VISIBLE)
+        views.setViewVisibility(R.id.widget_empty, View.VISIBLE)
+        views.setTextViewText(R.id.widget_empty, context.getString(R.string.widget_empty))
+        views
+      } catch (_: Exception) {
+        RemoteViews(context.packageName, android.R.layout.simple_list_item_1).apply {
+          setTextViewText(android.R.id.text1, context.getString(R.string.widget_empty))
+        }
+      }
+    }
+
     private fun bindSlot(
       context: Context,
       views: RemoteViews,
@@ -83,9 +122,15 @@ class RoutineTrackerWidgetProvider : AppWidgetProvider() {
         return
       }
 
-      val item = activities.getJSONObject(index)
+      val item = activities.optJSONObject(index)
+      if (item == null) {
+        Log.w(TAG, "skipping non-object activity at index $index")
+        views.setViewVisibility(slotId, View.GONE)
+        return
+      }
+
       val activityId = item.optString("id", "")
-      val title = item.optString("title", "")
+      val title = item.optString("title", "Untitled activity")
       val dueTime = item.optString("dueTime", "")
       val status = item.optString("status", "pending")
 
@@ -100,6 +145,11 @@ class RoutineTrackerWidgetProvider : AppWidgetProvider() {
       }
 
       views.setInt(statusId, "setBackgroundColor", statusAccentColor(status))
+
+      if (activityId.isBlank()) {
+        views.setOnClickPendingIntent(checkId, null)
+        return
+      }
 
       val completeIntent = Intent(context, WidgetCompleteReceiver::class.java).apply {
         action = ACTION_COMPLETE

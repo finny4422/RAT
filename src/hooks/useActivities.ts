@@ -1,9 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { DeviceEventEmitter } from 'react-native';
 
-import { activityService, completeActivityWithLifecycleSync, ACTIVITIES_CHANGED_EVENT, type VisibleActivity } from '@/services';
+import { logDbLifecycle } from '@/database/dbLifecycle';
+import {
+  activityService,
+  completeActivityWithLifecycleSync,
+  ACTIVITIES_CHANGED_EVENT,
+  type VisibleActivity,
+} from '@/services';
 import { normalizeVisibleActivity } from '@/services/activity/normalizeActivity';
-import { refreshDatabaseConnection } from '@/database';
 
 type UseActivitiesState = {
   activities: VisibleActivity[];
@@ -54,10 +59,11 @@ export function useActivities() {
     }));
 
     try {
-      await refreshDatabaseConnection();
+      logDbLifecycle('activities: load start', { mode });
       const activities = (await activityService.getTodaysVisibleActivities()).map(
         normalizeVisibleActivity,
       );
+      logDbLifecycle('activities: load complete', { count: activities.length, mode });
 
       setState((current: UseActivitiesState) => {
         if (visibleActivitiesEqual(current.activities, activities)) {
@@ -95,7 +101,6 @@ export function useActivities() {
 
   const silentRefresh = useCallback(async () => {
     try {
-      await refreshDatabaseConnection();
       const activities = (await activityService.getTodaysVisibleActivities()).map(
         normalizeVisibleActivity,
       );
@@ -138,8 +143,10 @@ export function useActivities() {
       }));
 
       try {
+        logDbLifecycle('completion: start', { activityId });
         await completeActivityWithLifecycleSync(activityId);
-        await loadActivities('refresh');
+        logDbLifecycle('completion: sync complete', { activityId });
+        // syncActivitiesAndWidget emits ACTIVITIES_CHANGED_EVENT; avoid parallel reload here.
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Failed to complete activity.';
 
