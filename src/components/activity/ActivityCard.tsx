@@ -3,36 +3,49 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Colors, StatusAccentColors, StatusColors } from '@/constants';
 import type { Activity } from '@/types';
 import { ActivityStatus } from '@/types';
+import {
+  normalizeActivity,
+  normalizeActivityStatus,
+} from '@/services/activity/normalizeActivity';
 
 import { ActivityCheckbox } from './ActivityCheckbox';
 
 type ActivityCardProps = {
-  activity: Activity;
-  status?: ActivityStatus;
+  activity: Activity | null | undefined;
+  status?: ActivityStatus | null;
   disabled?: boolean;
   onComplete?: () => void;
 };
 
 export function ActivityCard({
   activity,
-  status = ActivityStatus.Pending,
+  status,
   disabled = false,
   onComplete,
 }: ActivityCardProps) {
+  const safeActivity = normalizeActivity(activity);
+  const safeStatus = normalizeActivityStatus(status);
+  const backgroundColor = StatusColors[safeStatus] ?? Colors.card;
+  const borderLeftColor = StatusAccentColors[safeStatus] ?? Colors.border;
+
   return (
     <View
       style={[
         styles.card,
         {
-          backgroundColor: StatusColors[status],
-          borderLeftColor: StatusAccentColors[status],
+          backgroundColor,
+          borderLeftColor,
         },
       ]}
     >
       <View style={styles.content}>
-        <Text style={styles.title}>{activity.title}</Text>
-        <Text style={styles.caption}>{activity.caption}</Text>
-        <Text style={styles.dueTime}>{activity.dueTime}</Text>
+        <Text style={styles.title}>{safeActivity.title}</Text>
+        {safeActivity.caption.length > 0 ? (
+          <Text style={styles.caption}>{safeActivity.caption}</Text>
+        ) : null}
+        {safeActivity.dueTime.length > 0 ? (
+          <Text style={styles.dueTime}>{safeActivity.dueTime}</Text>
+        ) : null}
       </View>
       <ActivityCheckbox disabled={disabled} onPress={onComplete} />
     </View>

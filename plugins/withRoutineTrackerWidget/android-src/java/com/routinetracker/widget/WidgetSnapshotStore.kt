@@ -8,6 +8,7 @@ object WidgetSnapshotStore {
   private const val PREFS_NAME = "routine_tracker_widget"
   private const val KEY_SNAPSHOT = "widget_snapshot_json"
   private const val KEY_TRIGGER = "widget_snapshot_trigger"
+  private const val KEY_MUTATION_VERSION = "data_mutation_version"
 
   fun save(context: Context, snapshotJson: String, trigger: String) {
     // commit() writes synchronously so RoutineTrackerWidgetUpdater reads the new
@@ -17,6 +18,7 @@ object WidgetSnapshotStore {
       .edit()
       .putString(KEY_SNAPSHOT, snapshotJson)
       .putString(KEY_TRIGGER, trigger)
+      .putLong(KEY_MUTATION_VERSION, getMutationVersion(context) + 1L)
       .commit()
 
     if (!saved) {
@@ -27,6 +29,11 @@ object WidgetSnapshotStore {
   fun loadJson(context: Context): String? {
     return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
       .getString(KEY_SNAPSHOT, null)
+  }
+
+  fun getMutationVersion(context: Context): Long {
+    return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+      .getLong(KEY_MUTATION_VERSION, 0L)
   }
 
   fun loadActivities(context: Context): JSONArray {

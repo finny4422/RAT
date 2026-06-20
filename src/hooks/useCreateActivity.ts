@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { activityService, ActivityValidationError, appLifecycleService } from '@/services';
+import { activityService, ActivityValidationError, syncActivitiesAndWidget } from '@/services';
 import type { CreateActivityInput } from '@/types';
 import { ActivityFrequency } from '@/types';
 import { toDateString } from '@/utils';
@@ -125,7 +125,7 @@ export function useCreateActivity() {
     try {
       activityService.validateActivityInput(input);
       await activityService.createActivity(input);
-      await appLifecycleService.runFullLifecycleSync('activity_mutation');
+      await syncActivitiesAndWidget('activity_mutation');
       resetForm();
       return true;
     } catch (error) {

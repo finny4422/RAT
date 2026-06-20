@@ -117,7 +117,7 @@ export const appLifecycleService: AppLifecycleService = {
     currentTime: Date = new Date(),
   ): Promise<LifecycleSyncResult> {
     if (lifecycleSyncInFlight) {
-      return lifecycleSyncInFlight;
+      await lifecycleSyncInFlight;
     }
 
     lifecycleSyncInFlight = performFullLifecycleSync(trigger, currentTime).finally(() => {

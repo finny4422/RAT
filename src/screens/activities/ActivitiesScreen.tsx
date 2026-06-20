@@ -9,8 +9,9 @@ import {
 } from 'react-native';
 
 import { ActivityCard, ScreenContainer } from '@/components';
-import { Colors } from '@/constants';
+import { Colors, Theme } from '@/constants';
 import { useActivities } from '@/hooks';
+import { normalizeVisibleActivity } from '@/services/activity/normalizeActivity';
 
 const PERIODIC_REFRESH_MS = 60_000;
 
@@ -82,21 +83,28 @@ export function ActivitiesScreen() {
 
       <FlatList
         data={activities}
-        keyExtractor={(item) => item.activity.id}
+        keyExtractor={(item, index) => {
+          const visible = normalizeVisibleActivity(item);
+          return visible.activity.id || `activity-${index}`;
+        }}
         contentContainerStyle={activities.length === 0 ? styles.emptyList : undefined}
         refreshing={isRefreshing}
         onRefresh={refresh}
         ListEmptyComponent={
           <Text style={styles.emptyText}>No activities require action today.</Text>
         }
-        renderItem={({ item }) => (
-          <ActivityCard
-            activity={item.activity}
-            status={item.status}
-            disabled={completingId === item.activity.id}
-            onComplete={() => completeActivity(item.activity.id)}
-          />
-        )}
+        renderItem={({ item }) => {
+          const visible = normalizeVisibleActivity(item);
+
+          return (
+            <ActivityCard
+              activity={visible.activity}
+              status={visible.status}
+              disabled={completingId === visible.activity.id}
+              onComplete={() => completeActivity(visible.activity.id)}
+            />
+          );
+        }}
         style={styles.list}
       />
     </ScreenContainer>
@@ -104,32 +112,12 @@ export function ActivitiesScreen() {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    marginBottom: 16,
-    color: Colors.text,
-  },
+  title: Theme.screenTitle,
   list: {
     flex: 1,
   },
-  centered: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyList: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  emptyText: {
-    fontSize: 16,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-  },
-  error: {
-    fontSize: 14,
-    color: Colors.text,
-    marginBottom: 12,
-  },
+  centered: Theme.centered,
+  emptyList: Theme.emptyList,
+  emptyText: Theme.emptyText,
+  error: Theme.screenError,
 });

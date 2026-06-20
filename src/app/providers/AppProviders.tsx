@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, AppState, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { bootstrapDatabase, refreshDatabaseConnection } from '@/database';
+import { bootstrapDatabase } from '@/database';
 import { Colors } from '@/constants';
+import { useWidgetDataSyncListener } from '@/hooks/useWidgetDataSyncListener';
 import { appLifecycleService, widgetBridge } from '@/services';
 
 type AppProvidersProps = {
@@ -14,6 +15,8 @@ type AppProvidersProps = {
 export function AppProviders({ children }: AppProvidersProps) {
   const [isReady, setIsReady] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useWidgetDataSyncListener(isReady);
 
   useEffect(() => {
     let cancelled = false;
@@ -52,22 +55,6 @@ export function AppProviders({ children }: AppProvidersProps) {
     };
   }, []);
 
-  useEffect(() => {
-    if (!isReady) {
-      return;
-    }
-
-    const subscription = AppState.addEventListener('change', (nextState) => {
-      if (nextState === 'active') {
-        void refreshDatabaseConnection();
-      }
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, [isReady]);
-
   if (errorMessage) {
     return (
       <SafeAreaProvider>
@@ -83,7 +70,7 @@ export function AppProviders({ children }: AppProvidersProps) {
     return (
       <SafeAreaProvider>
         <View style={styles.centered}>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="large" color={Colors.primary} />
         </View>
       </SafeAreaProvider>
     );

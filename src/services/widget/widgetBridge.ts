@@ -6,6 +6,8 @@ import {
   type WidgetSnapshot,
 } from './widgetSnapshot';
 
+export const WIDGET_DATA_MUTATED_EVENT = 'routine-tracker:data-mutated';
+
 export type LifecycleSyncTrigger =
   | 'app_open'
   | 'widget_added'
@@ -30,6 +32,9 @@ type NativeRoutineTrackerWidget = {
   reloadWidgetUI(): Promise<void>;
   getPersistedSnapshot(): Promise<string | null>;
   scheduleBackgroundSync(): Promise<void>;
+  getDataMutationVersion(): Promise<number>;
+  addListener(eventName: string): void;
+  removeListeners(count: number): void;
 };
 
 export interface WidgetBridge {
@@ -37,11 +42,13 @@ export interface WidgetBridge {
   reloadWidgetUI(): Promise<void>;
   getPersistedSnapshot(): Promise<WidgetSnapshot | null>;
   scheduleBackgroundSync(): Promise<void>;
+  getDataMutationVersion(): Promise<number>;
 }
 
 /** In-memory fallback for non-Android platforms only (no native widget target). */
 let stubSnapshot: WidgetSnapshot | null = null;
 let stubTrigger: LifecycleSyncTrigger | null = null;
+let stubMutationVersion = 0;
 
 function isAndroidPlatform(): boolean {
   return Platform.OS === 'android';
@@ -85,6 +92,7 @@ function requireAndroidNativeModule(operation: string): NativeRoutineTrackerWidg
 function persistToStub(snapshot: WidgetSnapshot, trigger: LifecycleSyncTrigger): void {
   stubSnapshot = snapshot;
   stubTrigger = trigger;
+  stubMutationVersion += 1;
 }
 
 export const widgetBridge: WidgetBridge = {
@@ -124,6 +132,19 @@ export const widgetBridge: WidgetBridge = {
 
     const nativeModule = requireAndroidNativeModule('scheduleBackgroundSync');
     await nativeModule.scheduleBackgroundSync();
+  },
+
+  async getDataMutationVersion() {
+    if (!isAndroidPlatform()) {
+      return stubMutationVersion;
+    }
+
+    const nativeModule = resolveNativeModule();
+    if (!nativeModule) {
+      return 0;
+    }
+
+    return nativeModule.getDataMutationVersion();
   },
 };
 

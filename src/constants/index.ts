@@ -1,1 +1,2 @@
-export { Colors, StatusColors } from './colors';
+export { Colors, StatusAccentColors, StatusColors } from './colors';
+export { FormTheme, Theme } from './theme';

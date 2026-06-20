@@ -13,6 +13,7 @@ export {
 export { reportService } from './report/reportService';
 export type { ReportService, EligibleReportWindow } from './report/reportService';
 export { ReportNotFoundError, ReportNotReadyError, ReportValidationError } from './report/reportErrors';
+export { syncActivitiesAndWidget } from './widget/syncActivitiesAndWidget';
 export { widgetService } from './widget/widgetService';
 export type { WidgetService } from './widget/widgetService';
 export {
@@ -24,7 +25,7 @@ export {
   WIDGET_SNAPSHOT_VERSION,
 } from './widget/widgetSnapshot';
 export type { WidgetActivityItem, WidgetSnapshot } from './widget/widgetSnapshot';
-export { widgetBridge, LIFECYCLE_SYNC_TRIGGERS, isNativeWidgetBridgeAvailable } from './widget/widgetBridge';
+export { widgetBridge, LIFECYCLE_SYNC_TRIGGERS, WIDGET_DATA_MUTATED_EVENT, isNativeWidgetBridgeAvailable } from './widget/widgetBridge';
 export type { LifecycleSyncTrigger, WidgetBridge } from './widget/widgetBridge';
 export { appLifecycleService } from './appLifecycle/appLifecycleService';
 export {

@@ -1,7 +1,6 @@
-import type { Activity } from '@/types';
-import { ActivityFrequency } from '@/types';
-
 import { ACTIVITIES_COLUMNS, ACTIVITIES_TABLE } from '@/database/schema';
+
+import { normalizeActivity } from './normalizeActivity';
 
 export type ActivityRow = {
   [ACTIVITIES_COLUMNS.id]: string;
@@ -36,21 +35,7 @@ export const ACTIVITY_SELECT_COLUMNS = `
 `.trim();
 
 export function mapRowToActivity(row: ActivityRow): Activity {
-  return {
-    id: row[ACTIVITIES_COLUMNS.id],
-    title: row[ACTIVITIES_COLUMNS.title],
-    caption: row[ACTIVITIES_COLUMNS.caption],
-    frequency: row[ACTIVITIES_COLUMNS.frequency] as ActivityFrequency,
-    dueTime: row[ACTIVITIES_COLUMNS.dueTime],
-    warningMinutes: row[ACTIVITIES_COLUMNS.warningMinutes],
-    weekDay: row[ACTIVITIES_COLUMNS.weekDay],
-    monthDay: row[ACTIVITIES_COLUMNS.monthDay],
-    oneTimeDate: row[ACTIVITIES_COLUMNS.oneTimeDate],
-    active: row[ACTIVITIES_COLUMNS.active] === 1,
-    createdAt: row[ACTIVITIES_COLUMNS.createdAt],
-    updatedAt: row[ACTIVITIES_COLUMNS.updatedAt],
-    lastClosedDate: row[ACTIVITIES_COLUMNS.lastClosedDate],
-  };
+  return normalizeActivity(row);
 }
 
 export function activityTableName(): string {

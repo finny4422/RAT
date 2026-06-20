@@ -10,6 +10,7 @@ import {
 
 import { ActivityNotFoundError } from './activityErrors';
 import { mapRowToActivity } from './activityMapper';
+import { normalizeVisibleActivity } from './normalizeActivity';
 import * as repository from './activityRepository';
 import { validateActivityInput, validateActivityUpdate } from './activityValidator';
 
@@ -72,7 +73,7 @@ async function resolveVisibleActivities(currentTime: Date): Promise<VisibleActiv
   return sorted.map((activity) => ({
     activity,
     status: calculateStatus(activity, currentTime),
-  }));
+  })).map((item) => normalizeVisibleActivity(item));
 }
 
 export const activityService: ActivityService = {

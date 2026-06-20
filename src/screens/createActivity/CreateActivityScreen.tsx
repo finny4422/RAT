@@ -12,7 +12,7 @@ import {
 
 import type { MainTabParamList } from '@/app/navigation/types';
 import { ScreenContainer } from '@/components';
-import { Colors } from '@/constants';
+import { Colors, FormTheme, Theme } from '@/constants';
 import { useCreateActivity } from '@/hooks';
 import { ActivityFrequency } from '@/types';
 
@@ -196,78 +196,24 @@ const styles = StyleSheet.create({
   form: {
     paddingBottom: 32,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    marginBottom: 16,
-    color: Colors.text,
-  },
+  title: Theme.screenTitle,
   field: {
     marginBottom: 16,
   },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: Colors.text,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: Colors.border,
-    backgroundColor: Colors.surface,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 16,
-    color: Colors.text,
-    borderRadius: 8,
-  },
-  fieldError: {
-    marginTop: 6,
-    fontSize: 13,
-    color: Colors.error,
-  },
-  submitError: {
-    marginBottom: 12,
-    fontSize: 14,
-    color: Colors.error,
-  },
+  label: FormTheme.label,
+  input: FormTheme.input,
+  fieldError: FormTheme.fieldError,
+  submitError: Theme.screenError,
   optionRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
   },
-  optionButton: {
-    borderWidth: 1,
-    borderColor: Colors.border,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: Colors.surface,
-    borderRadius: 8,
-  },
-  optionButtonSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primary,
-  },
-  optionText: {
-    fontSize: 14,
-    color: Colors.text,
-  },
-  optionTextSelected: {
-    color: Colors.text,
-  },
-  saveButton: {
-    marginTop: 8,
-    backgroundColor: Colors.primary,
-    paddingVertical: 14,
-    alignItems: 'center',
-    borderRadius: 10,
-  },
-  saveButtonDisabled: {
-    opacity: 0.6,
-  },
-  saveButtonText: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: '600',
-  },
+  optionButton: FormTheme.optionButton,
+  optionButtonSelected: FormTheme.optionButtonSelected,
+  optionText: FormTheme.optionText,
+  optionTextSelected: FormTheme.optionTextSelected,
+  saveButton: FormTheme.saveButton,
+  saveButtonDisabled: FormTheme.saveButtonDisabled,
+  saveButtonText: FormTheme.saveButtonText,
 });

@@ -58,7 +58,7 @@ class RoutineTrackerWidgetProvider : AppWidgetProvider() {
 
       if (activities.length() == 0) {
         views.setViewVisibility(R.id.widget_empty, View.VISIBLE)
-        views.setViewVisibility(R.id.widget_header, View.GONE)
+        views.setViewVisibility(R.id.widget_header, View.VISIBLE)
       } else {
         views.setViewVisibility(R.id.widget_empty, View.GONE)
         views.setViewVisibility(R.id.widget_header, View.VISIBLE)

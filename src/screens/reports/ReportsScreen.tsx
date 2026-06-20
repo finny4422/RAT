@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 import { ReportCard, ScreenContainer } from '@/components';
-import { Colors } from '@/constants';
+import { Colors, Theme } from '@/constants';
 import { useReports } from '@/hooks';
 
 export function ReportsScreen() {
@@ -73,32 +73,12 @@ export function ReportsScreen() {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    marginBottom: 16,
-    color: Colors.text,
-  },
+  title: Theme.screenTitle,
   list: {
     flex: 1,
   },
-  centered: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyList: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  emptyText: {
-    fontSize: 16,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-  },
-  error: {
-    fontSize: 14,
-    color: Colors.text,
-    marginBottom: 12,
-  },
+  centered: Theme.centered,
+  emptyList: Theme.emptyList,
+  emptyText: Theme.emptyText,
+  error: Theme.screenError,
 });
