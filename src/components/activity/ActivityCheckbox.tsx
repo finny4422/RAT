@@ -1,6 +1,6 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
-import { Colors } from '@/constants';
+import { Colors } from '@/constants/colors';
 
 type ActivityCheckboxProps = {
   checked?: boolean;
@@ -19,7 +19,11 @@ export function ActivityCheckbox({
       accessibilityState={{ checked, disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={[styles.checkbox, checked && styles.checked, disabled && styles.disabled]}
+      style={[
+        styles.checkbox,
+        checked ? styles.checked : null,
+        disabled ? styles.disabled : null,
+      ]}
     />
   );
 }

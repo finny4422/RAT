@@ -4,6 +4,8 @@ import { ActivityFrequency, ActivityStatus } from '@/types';
 
 import type { VisibleActivity } from './activityService';
 
+export type NormalizedVisibleActivity = VisibleActivity;
+
 function readField(record: Record<string, unknown>, camelKey: string, columnKey: string): unknown {
   if (record[camelKey] !== undefined && record[camelKey] !== null) {
     return record[camelKey];

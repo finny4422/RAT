@@ -13,14 +13,4 @@ export const Colors = {
   success: '#30D158',
 } as const;
 
-export const StatusColors: Record<ActivityStatus, string> = {
-  [ActivityStatus.Pending]: Colors.card,
-  [ActivityStatus.DueSoon]: '#3A3220',
-  [ActivityStatus.Missed]: '#3A2024',
-};
-
-export const StatusAccentColors: Record<ActivityStatus, string> = {
-  [ActivityStatus.Pending]: Colors.border,
-  [ActivityStatus.DueSoon]: Colors.warning,
-  [ActivityStatus.Missed]: Colors.error,
-};
+export { StatusColors, StatusAccentColors, getStatusCardColors } from './statusColors';

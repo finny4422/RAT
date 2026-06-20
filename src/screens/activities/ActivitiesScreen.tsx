@@ -11,9 +11,27 @@ import {
 import { ActivityCard, ScreenContainer } from '@/components';
 import { Colors, Theme } from '@/constants';
 import { useActivities } from '@/hooks';
-import { normalizeVisibleActivity } from '@/services/activity/normalizeActivity';
 
 const PERIODIC_REFRESH_MS = 60_000;
+const loggedMalformedIndexes = new Set<number>();
+
+function warnMalformedVisibleActivity(item: unknown, index: number): void {
+  if (!__DEV__) {
+    return;
+  }
+
+  if (loggedMalformedIndexes.has(index)) {
+    return;
+  }
+
+  const isObject = item !== null && typeof item === 'object';
+  const hasActivity = isObject && 'activity' in (item as Record<string, unknown>);
+
+  if (!isObject || !hasActivity) {
+    loggedMalformedIndexes.add(index);
+    console.warn('[ActivitiesScreen] malformed visible activity', { index, item });
+  }
+}
 
 export function ActivitiesScreen() {
   const {
@@ -83,25 +101,22 @@ export function ActivitiesScreen() {
 
       <FlatList
         data={activities}
-        keyExtractor={(item, index) => {
-          const visible = normalizeVisibleActivity(item);
-          return visible.activity.id || `activity-${index}`;
-        }}
+        keyExtractor={(item, index) => item.activity.id || `activity-${index}`}
         contentContainerStyle={activities.length === 0 ? styles.emptyList : undefined}
         refreshing={isRefreshing}
         onRefresh={refresh}
         ListEmptyComponent={
           <Text style={styles.emptyText}>No activities require action today.</Text>
         }
-        renderItem={({ item }) => {
-          const visible = normalizeVisibleActivity(item);
+        renderItem={({ item, index }) => {
+          warnMalformedVisibleActivity(item, index);
 
           return (
             <ActivityCard
-              activity={visible.activity}
-              status={visible.status}
-              disabled={completingId === visible.activity.id}
-              onComplete={() => completeActivity(visible.activity.id)}
+              activity={item.activity}
+              status={item.status}
+              disabled={completingId === item.activity.id}
+              onComplete={() => completeActivity(item.activity.id)}
             />
           );
         }}

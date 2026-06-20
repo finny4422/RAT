@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { DeviceEventEmitter } from 'react-native';
 
 import { activityService, completeActivityWithLifecycleSync, ACTIVITIES_CHANGED_EVENT, type VisibleActivity } from '@/services';
+import { normalizeVisibleActivity } from '@/services/activity/normalizeActivity';
 import { refreshDatabaseConnection } from '@/database';
 
 type UseActivitiesState = {
@@ -54,7 +55,9 @@ export function useActivities() {
 
     try {
       await refreshDatabaseConnection();
-      const activities = await activityService.getTodaysVisibleActivities();
+      const activities = (await activityService.getTodaysVisibleActivities()).map(
+        normalizeVisibleActivity,
+      );
 
       setState((current: UseActivitiesState) => {
         if (visibleActivitiesEqual(current.activities, activities)) {
@@ -93,7 +96,9 @@ export function useActivities() {
   const silentRefresh = useCallback(async () => {
     try {
       await refreshDatabaseConnection();
-      const activities = await activityService.getTodaysVisibleActivities();
+      const activities = (await activityService.getTodaysVisibleActivities()).map(
+        normalizeVisibleActivity,
+      );
 
       setState((current: UseActivitiesState) => {
         if (visibleActivitiesEqual(current.activities, activities)) {

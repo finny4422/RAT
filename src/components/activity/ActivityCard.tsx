@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Colors, StatusAccentColors, StatusColors } from '@/constants';
+import { Colors, getStatusCardColors } from '@/constants/colors';
 import type { Activity } from '@/types';
 import { ActivityStatus } from '@/types';
 import {
@@ -10,12 +10,23 @@ import {
 
 import { ActivityCheckbox } from './ActivityCheckbox';
 
+const loggedFallbackActivityIds = new Set<string>();
+
 type ActivityCardProps = {
   activity: Activity | null | undefined;
-  status?: ActivityStatus | null;
+  status?: ActivityStatus | string | null;
   disabled?: boolean;
   onComplete?: () => void;
 };
+
+function logNormalizationFallback(activityId: string, reason: string): void {
+  if (!__DEV__ || loggedFallbackActivityIds.has(activityId)) {
+    return;
+  }
+
+  loggedFallbackActivityIds.add(activityId);
+  console.warn('[ActivityCard] normalization fallback applied', { activityId, reason });
+}
 
 export function ActivityCard({
   activity,
@@ -25,8 +36,19 @@ export function ActivityCard({
 }: ActivityCardProps) {
   const safeActivity = normalizeActivity(activity);
   const safeStatus = normalizeActivityStatus(status);
-  const backgroundColor = StatusColors[safeStatus] ?? Colors.card;
-  const borderLeftColor = StatusAccentColors[safeStatus] ?? Colors.border;
+
+  if (__DEV__) {
+    if (!activity || typeof activity !== 'object') {
+      logNormalizationFallback(safeActivity.id || 'unknown', 'missing activity object');
+    } else if (!('title' in activity) || activity.title == null) {
+      logNormalizationFallback(safeActivity.id || 'unknown', 'missing title');
+    }
+  }
+
+  const { background: backgroundColor, accent: borderLeftColor } = getStatusCardColors(safeStatus);
+  const title = safeActivity.title;
+  const caption = safeActivity.caption ?? '';
+  const dueTime = safeActivity.dueTime ?? '';
 
   return (
     <View
@@ -39,13 +61,9 @@ export function ActivityCard({
       ]}
     >
       <View style={styles.content}>
-        <Text style={styles.title}>{safeActivity.title}</Text>
-        {safeActivity.caption.length > 0 ? (
-          <Text style={styles.caption}>{safeActivity.caption}</Text>
-        ) : null}
-        {safeActivity.dueTime.length > 0 ? (
-          <Text style={styles.dueTime}>{safeActivity.dueTime}</Text>
-        ) : null}
+        <Text style={styles.title}>{title}</Text>
+        {caption.length > 0 ? <Text style={styles.caption}>{caption}</Text> : null}
+        {dueTime.length > 0 ? <Text style={styles.dueTime}>{dueTime}</Text> : null}
       </View>
       <ActivityCheckbox disabled={disabled} onPress={onComplete} />
     </View>
