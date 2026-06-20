@@ -1,24 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/widget_root"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
+  android:background="@drawable/widget_root_background"
   android:orientation="vertical"
-  android:padding="8dp">
+  android:padding="12dp">
+
+  <TextView
+    android:id="@+id/widget_header"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="8dp"
+    android:text="@string/widget_header"
+    android:textColor="@color/widget_text_primary"
+    android:textSize="13sp"
+    android:textStyle="bold" />
 
   <TextView
     android:id="@+id/widget_empty"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:padding="12dp"
+    android:paddingVertical="16dp"
     android:text="@string/widget_empty"
-    android:textSize="14sp"
+    android:textColor="@color/widget_text_secondary"
+    android:textSize="13sp"
     android:visibility="gone" />
 
   <LinearLayout
     android:id="@+id/widget_slot_1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="6dp"
     android:orientation="vertical"
     android:visibility="gone">
 
@@ -26,9 +40,21 @@
       android:id="@+id/widget_row_1"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:background="@drawable/widget_row_background"
       android:gravity="center_vertical"
       android:orientation="horizontal"
-      android:padding="12dp">
+      android:paddingHorizontal="10dp"
+      android:paddingVertical="10dp">
+
+      <ImageButton
+        android:id="@+id/widget_check_1"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/widget_checkbox_outline"
+        android:contentDescription="@string/widget_complete"
+        android:scaleType="center"
+        android:src="@android:color/transparent" />
 
       <LinearLayout
         android:layout_width="0dp"
@@ -40,24 +66,28 @@
           android:id="@+id/widget_title_1"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:textSize="16sp"
+          android:ellipsize="end"
+          android:maxLines="1"
+          android:textColor="@color/widget_text_primary"
+          android:textSize="14sp"
           android:textStyle="bold" />
 
         <TextView
           android:id="@+id/widget_due_1"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="4dp"
-          android:textSize="14sp" />
+          android:layout_marginTop="2dp"
+          android:ellipsize="end"
+          android:maxLines="1"
+          android:textColor="@color/widget_text_secondary"
+          android:textSize="12sp" />
       </LinearLayout>
 
-      <ImageButton
-        android:id="@+id/widget_check_1"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:background="@android:color/transparent"
-        android:contentDescription="@string/widget_complete"
-        android:src="@android:drawable/checkbox_off_background" />
+      <View
+        android:id="@+id/widget_status_1"
+        android:layout_width="4dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp" />
     </LinearLayout>
   </LinearLayout>
 
@@ -65,7 +95,6 @@
     android:id="@+id/widget_slot_2"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
     android:orientation="vertical"
     android:visibility="gone">
 
@@ -73,9 +102,21 @@
       android:id="@+id/widget_row_2"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:background="@drawable/widget_row_background"
       android:gravity="center_vertical"
       android:orientation="horizontal"
-      android:padding="12dp">
+      android:paddingHorizontal="10dp"
+      android:paddingVertical="10dp">
+
+      <ImageButton
+        android:id="@+id/widget_check_2"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/widget_checkbox_outline"
+        android:contentDescription="@string/widget_complete"
+        android:scaleType="center"
+        android:src="@android:color/transparent" />
 
       <LinearLayout
         android:layout_width="0dp"
@@ -87,24 +128,28 @@
           android:id="@+id/widget_title_2"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:textSize="16sp"
+          android:ellipsize="end"
+          android:maxLines="1"
+          android:textColor="@color/widget_text_primary"
+          android:textSize="14sp"
           android:textStyle="bold" />
 
         <TextView
           android:id="@+id/widget_due_2"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="4dp"
-          android:textSize="14sp" />
+          android:layout_marginTop="2dp"
+          android:ellipsize="end"
+          android:maxLines="1"
+          android:textColor="@color/widget_text_secondary"
+          android:textSize="12sp" />
       </LinearLayout>
 
-      <ImageButton
-        android:id="@+id/widget_check_2"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:background="@android:color/transparent"
-        android:contentDescription="@string/widget_complete"
-        android:src="@android:drawable/checkbox_off_background" />
+      <View
+        android:id="@+id/widget_status_2"
+        android:layout_width="4dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp" />
     </LinearLayout>
   </LinearLayout>
 </LinearLayout>

@@ -83,3 +83,12 @@ export async function shutdownDatabase(): Promise<void> {
   bootstrapResult = null;
   await closeConnection();
 }
+
+/**
+ * Closes and reopens the DB connection so reads see writes from other JS contexts
+ * (e.g. widget headless completion while the app process stays alive).
+ */
+export async function refreshDatabaseConnection(): Promise<BootstrapResult> {
+  await shutdownDatabase();
+  return bootstrapDatabase();
+}

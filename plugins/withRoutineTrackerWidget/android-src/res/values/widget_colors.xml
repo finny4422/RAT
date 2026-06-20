@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="widget_background">#1C1C1E</color>
+  <color name="widget_row_background">#2C2C2E</color>
+  <color name="widget_text_primary">#F5F5F5</color>
+  <color name="widget_text_secondary">#A0A0A0</color>
+  <color name="widget_accent">#0A84FF</color>
+  <color name="widget_status_missed">#FF453A</color>
+  <color name="widget_status_due_soon">#FFD60A</color>
+  <color name="widget_status_pending">#3A3A3C</color>
+</resources>

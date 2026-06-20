@@ -30,8 +30,8 @@ const styles = StyleSheet.create({
     height: 28,
     borderRadius: 6,
     borderWidth: 2,
-    borderColor: Colors.border,
-    backgroundColor: Colors.background,
+    borderColor: Colors.textSecondary,
+    backgroundColor: Colors.surface,
   },
   checked: {
     backgroundColor: Colors.primary,

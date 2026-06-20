@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, AppState, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { bootstrapDatabase } from '@/database';
+import { bootstrapDatabase, refreshDatabaseConnection } from '@/database';
+import { Colors } from '@/constants';
 import { appLifecycleService, widgetBridge } from '@/services';
 
 type AppProvidersProps = {
@@ -51,6 +52,22 @@ export function AppProviders({ children }: AppProvidersProps) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        void refreshDatabaseConnection();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [isReady]);
+
   if (errorMessage) {
     return (
       <SafeAreaProvider>
@@ -81,15 +98,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
+    backgroundColor: Colors.background,
   },
   errorTitle: {
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 8,
+    color: Colors.text,
   },
   errorMessage: {
     fontSize: 14,
     textAlign: 'center',
-    color: '#757575',
+    color: Colors.textSecondary,
   },
 });

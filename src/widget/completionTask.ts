@@ -1,28 +1,36 @@
 import { bootstrapDatabase } from '@/database';
-import { activityLogService, appLifecycleService } from '@/services';
+import { completeActivityWithLifecycleSync } from '@/services';
 
 export type WidgetCompletionTaskPayload = {
   activityId: string;
 };
 
-/**
- * Headless entry for widget checkbox completion (no app UI).
- * recordCompletion → runFullLifecycleSync('completion')
- */
-export async function runWidgetCompletionTask(
-  payload: WidgetCompletionTaskPayload,
-): Promise<void> {
-  if (!payload.activityId) {
+function extractActivityId(payload: unknown): string {
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('Widget completion requires a payload with activityId.');
+  }
+
+  const record = payload as Record<string, unknown>;
+  const activityId = record.activityId;
+
+  if (typeof activityId !== 'string' || activityId.trim().length === 0) {
     throw new Error('Widget completion requires activityId.');
   }
 
-  await bootstrapDatabase();
-  await activityLogService.recordCompletion(payload.activityId);
-  await appLifecycleService.runFullLifecycleSync('completion');
+  return activityId.trim();
 }
 
-export default async function widgetCompletionTask(
-  payload: WidgetCompletionTaskPayload,
-): Promise<void> {
+/**
+ * Headless entry for widget checkbox completion (no app UI).
+ * Uses the same canonical completion path as the in-app checkbox.
+ */
+export async function runWidgetCompletionTask(payload: unknown): Promise<void> {
+  const activityId = extractActivityId(payload);
+
+  await bootstrapDatabase();
+  await completeActivityWithLifecycleSync(activityId);
+}
+
+export default async function widgetCompletionTask(payload: unknown): Promise<void> {
   await runWidgetCompletionTask(payload);
 }

@@ -44,7 +44,7 @@ export function ReportsScreen() {
     return (
       <ScreenContainer>
         <View style={styles.centered}>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="large" color={Colors.primary} />
         </View>
       </ScreenContainer>
     );

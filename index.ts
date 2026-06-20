@@ -10,5 +10,7 @@ registerRootComponent(App);
 AppRegistry.registerHeadlessTask('RoutineTrackerWidgetSync', () => widgetHeadlessTask);
 AppRegistry.registerHeadlessTask(
   'RoutineTrackerWidgetCompletion',
-  () => widgetCompletionTask,
+  () => async (taskData?: unknown) => {
+    await widgetCompletionTask(taskData);
+  },
 );

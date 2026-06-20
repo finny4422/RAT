@@ -74,6 +74,7 @@ export function CreateActivityScreen() {
             onChangeText={(value) => setField('title', value)}
             style={styles.input}
             placeholder="Activity title"
+            placeholderTextColor={Colors.textSecondary}
           />
         </FormField>
 
@@ -83,6 +84,7 @@ export function CreateActivityScreen() {
             onChangeText={(value) => setField('caption', value)}
             style={styles.input}
             placeholder="Short description"
+            placeholderTextColor={Colors.textSecondary}
           />
         </FormField>
 
@@ -112,6 +114,7 @@ export function CreateActivityScreen() {
             onChangeText={(value) => setField('dueTime', value)}
             style={styles.input}
             placeholder="20:00"
+            placeholderTextColor={Colors.textSecondary}
             autoCapitalize="none"
             autoCorrect={false}
           />
@@ -123,6 +126,7 @@ export function CreateActivityScreen() {
             onChangeText={(value) => setField('warningMinutes', value)}
             style={styles.input}
             placeholder="60"
+            placeholderTextColor={Colors.textSecondary}
             keyboardType="number-pad"
           />
         </FormField>
@@ -156,6 +160,7 @@ export function CreateActivityScreen() {
               onChangeText={(value) => setField('monthDay', value)}
               style={styles.input}
               placeholder="15"
+              placeholderTextColor={Colors.textSecondary}
               keyboardType="number-pad"
             />
           </FormField>
@@ -168,6 +173,7 @@ export function CreateActivityScreen() {
               onChangeText={(value) => setField('oneTimeDate', value)}
               style={styles.input}
               placeholder="2026-07-10"
+              placeholderTextColor={Colors.textSecondary}
               autoCapitalize="none"
               autoCorrect={false}
             />
@@ -208,21 +214,22 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: Colors.border,
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.surface,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,
     color: Colors.text,
+    borderRadius: 8,
   },
   fieldError: {
     marginTop: 6,
     fontSize: 13,
-    color: Colors.text,
+    color: Colors.error,
   },
   submitError: {
     marginBottom: 12,
     fontSize: 14,
-    color: Colors.text,
+    color: Colors.error,
   },
   optionRow: {
     flexDirection: 'row',
@@ -234,7 +241,8 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.surface,
+    borderRadius: 8,
   },
   optionButtonSelected: {
     borderColor: Colors.primary,
@@ -245,19 +253,20 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
   optionTextSelected: {
-    color: '#FFFFFF',
+    color: Colors.text,
   },
   saveButton: {
     marginTop: 8,
     backgroundColor: Colors.primary,
     paddingVertical: 14,
     alignItems: 'center',
+    borderRadius: 10,
   },
   saveButtonDisabled: {
     opacity: 0.6,
   },
   saveButtonText: {
-    color: '#FFFFFF',
+    color: Colors.text,
     fontSize: 16,
     fontWeight: '600',
   },

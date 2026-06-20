@@ -1,6 +1,7 @@
 export { activityService } from './activity/activityService';
 export type { ActivityService, VisibleActivity } from './activity/activityService';
 export { ActivityNotFoundError, ActivityValidationError } from './activity/activityErrors';
+export { completeActivityWithLifecycleSync, ACTIVITIES_CHANGED_EVENT } from './activityCompletion';
 export { activityLogService } from './activityLog/activityLogService';
 export type { ActivityLogService, CycleCloseResult } from './activityLog/activityLogService';
 export {

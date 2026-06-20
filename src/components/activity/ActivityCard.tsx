@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Colors, StatusColors } from '@/constants';
+import { Colors, StatusAccentColors, StatusColors } from '@/constants';
 import type { Activity } from '@/types';
 import { ActivityStatus } from '@/types';
 
@@ -20,7 +20,15 @@ export function ActivityCard({
   onComplete,
 }: ActivityCardProps) {
   return (
-    <View style={[styles.card, { backgroundColor: StatusColors[status] }]}>
+    <View
+      style={[
+        styles.card,
+        {
+          backgroundColor: StatusColors[status],
+          borderLeftColor: StatusAccentColors[status],
+        },
+      ]}
+    >
       <View style={styles.content}>
         <Text style={styles.title}>{activity.title}</Text>
         <Text style={styles.caption}>{activity.caption}</Text>
@@ -40,6 +48,8 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: Colors.border,
+    borderLeftWidth: 4,
+    borderRadius: 10,
     marginBottom: 12,
   },
   content: {
@@ -58,7 +68,7 @@ const styles = StyleSheet.create({
   },
   dueTime: {
     fontSize: 14,
-    color: Colors.text,
+    color: Colors.textSecondary,
     marginTop: 8,
   },
 });

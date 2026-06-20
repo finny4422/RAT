@@ -1,15 +1,26 @@
 import { ActivityStatus } from '@/types';
 
+export const Colors = {
+  background: '#121212',
+  surface: '#1C1C1E',
+  card: '#2C2C2E',
+  text: '#F5F5F5',
+  textSecondary: '#A0A0A0',
+  border: '#3A3A3C',
+  primary: '#0A84FF',
+  error: '#FF453A',
+  warning: '#FFD60A',
+  success: '#30D158',
+} as const;
+
 export const StatusColors: Record<ActivityStatus, string> = {
-  [ActivityStatus.Pending]: '#FFFFFF',
-  [ActivityStatus.DueSoon]: '#FFEB3B',
-  [ActivityStatus.Missed]: '#F44336',
+  [ActivityStatus.Pending]: Colors.card,
+  [ActivityStatus.DueSoon]: '#3A3220',
+  [ActivityStatus.Missed]: '#3A2024',
 };
 
-export const Colors = {
-  background: '#F5F5F5',
-  text: '#212121',
-  textSecondary: '#757575',
-  border: '#E0E0E0',
-  primary: '#1976D2',
-} as const;
+export const StatusAccentColors: Record<ActivityStatus, string> = {
+  [ActivityStatus.Pending]: Colors.border,
+  [ActivityStatus.DueSoon]: Colors.warning,
+  [ActivityStatus.Missed]: Colors.error,
+};

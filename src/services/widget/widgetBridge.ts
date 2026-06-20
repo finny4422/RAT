@@ -12,7 +12,8 @@ export type LifecycleSyncTrigger =
   | 'phone_reboot'
   | 'date_changed'
   | 'periodic_sync'
-  | 'completion';
+  | 'completion'
+  | 'activity_mutation';
 
 export const LIFECYCLE_SYNC_TRIGGERS: LifecycleSyncTrigger[] = [
   'app_open',
@@ -21,6 +22,7 @@ export const LIFECYCLE_SYNC_TRIGGERS: LifecycleSyncTrigger[] = [
   'date_changed',
   'periodic_sync',
   'completion',
+  'activity_mutation',
 ];
 
 type NativeRoutineTrackerWidget = {

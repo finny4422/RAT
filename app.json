@@ -4,14 +4,19 @@
     "slug": "routine-tracker",
     "version": "1.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.routinetracker.app"
     },
     "android": {
-      "package": "com.routinetracker.app"
+      "package": "com.routinetracker.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1C1C1E"
+      }
     },
     "plugins": [
       "./plugins/withRoutineTrackerWidget/app.plugin.js",

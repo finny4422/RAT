@@ -2,6 +2,7 @@ package com.routinetracker.widget
 
 import android.content.Context
 import android.content.Intent
+import androidx.core.content.ContextCompat
 import com.facebook.react.HeadlessJsTaskService
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.jstasks.HeadlessJsTaskConfig
@@ -12,7 +13,8 @@ class WidgetSyncHeadlessService : HeadlessJsTaskService() {
       val intent = Intent(context, WidgetSyncHeadlessService::class.java).apply {
         putExtra("trigger", trigger)
       }
-      context.startService(intent)
+
+      ContextCompat.startForegroundService(context, intent)
     }
   }
 

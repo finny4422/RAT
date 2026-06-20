@@ -188,6 +188,7 @@ if (!application) {
 const permissions = [
   'android.permission.RECEIVE_BOOT_COMPLETED',
   'android.permission.WAKE_LOCK',
+  'android.permission.FOREGROUND_SERVICE',
 ];
 
 for (const permission of permissions) {

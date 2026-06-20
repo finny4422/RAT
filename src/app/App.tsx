@@ -6,7 +6,7 @@ import { AppProviders } from './providers';
 export function App() {
   return (
     <AppProviders>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
       <MainTabNavigator />
     </AppProviders>
   );

@@ -70,7 +70,8 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: Colors.border,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.card,
+    borderRadius: 10,
     marginBottom: 12,
   },
   title: {
@@ -97,7 +98,7 @@ const styles = StyleSheet.create({
   score: {
     fontSize: 15,
     fontWeight: '600',
-    color: Colors.text,
+    color: Colors.primary,
     marginTop: 12,
   },
 });

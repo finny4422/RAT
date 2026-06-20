@@ -8,7 +8,6 @@ import android.content.Intent
 import android.view.View
 import android.widget.RemoteViews
 import com.routinetracker.app.R
-import org.json.JSONObject
 
 class RoutineTrackerWidgetProvider : AppWidgetProvider() {
   override fun onEnabled(context: Context) {
@@ -34,13 +33,35 @@ class RoutineTrackerWidgetProvider : AppWidgetProvider() {
       val views = RemoteViews(context.packageName, R.layout.widget_routine_tracker)
       val activities = WidgetSnapshotStore.loadActivities(context)
 
-      bindSlot(context, views, activities, 0, R.id.widget_slot_1, R.id.widget_title_1, R.id.widget_due_1, R.id.widget_check_1, R.id.widget_row_1)
-      bindSlot(context, views, activities, 1, R.id.widget_slot_2, R.id.widget_title_2, R.id.widget_due_2, R.id.widget_check_2, R.id.widget_row_2)
+      bindSlot(
+        context,
+        views,
+        activities,
+        0,
+        R.id.widget_slot_1,
+        R.id.widget_title_1,
+        R.id.widget_due_1,
+        R.id.widget_check_1,
+        R.id.widget_status_1,
+      )
+      bindSlot(
+        context,
+        views,
+        activities,
+        1,
+        R.id.widget_slot_2,
+        R.id.widget_title_2,
+        R.id.widget_due_2,
+        R.id.widget_check_2,
+        R.id.widget_status_2,
+      )
 
       if (activities.length() == 0) {
         views.setViewVisibility(R.id.widget_empty, View.VISIBLE)
+        views.setViewVisibility(R.id.widget_header, View.GONE)
       } else {
         views.setViewVisibility(R.id.widget_empty, View.GONE)
+        views.setViewVisibility(R.id.widget_header, View.VISIBLE)
       }
 
       return views
@@ -55,7 +76,7 @@ class RoutineTrackerWidgetProvider : AppWidgetProvider() {
       titleId: Int,
       dueId: Int,
       checkId: Int,
-      rowId: Int,
+      statusId: Int,
     ) {
       if (index >= activities.length()) {
         views.setViewVisibility(slotId, View.GONE)
@@ -70,8 +91,15 @@ class RoutineTrackerWidgetProvider : AppWidgetProvider() {
 
       views.setViewVisibility(slotId, View.VISIBLE)
       views.setTextViewText(titleId, title)
-      views.setTextViewText(dueId, dueTime)
-      views.setInt(rowId, "setBackgroundColor", statusColor(status))
+
+      if (dueTime.isBlank()) {
+        views.setViewVisibility(dueId, View.GONE)
+      } else {
+        views.setViewVisibility(dueId, View.VISIBLE)
+        views.setTextViewText(dueId, dueTime)
+      }
+
+      views.setInt(statusId, "setBackgroundColor", statusAccentColor(status))
 
       val completeIntent = Intent(context, WidgetCompleteReceiver::class.java).apply {
         action = ACTION_COMPLETE
@@ -86,11 +114,11 @@ class RoutineTrackerWidgetProvider : AppWidgetProvider() {
       views.setOnClickPendingIntent(checkId, pendingIntent)
     }
 
-    private fun statusColor(status: String): Int {
+    private fun statusAccentColor(status: String): Int {
       return when (status) {
-        "missed" -> 0xFFF44336.toInt()
-        "due_soon" -> 0xFFFFEB3B.toInt()
-        else -> 0xFFFFFFFF.toInt()
+        "missed" -> 0xFFFF453A.toInt()
+        "due_soon" -> 0xFFFFD60A.toInt()
+        else -> 0xFF3A3A3C.toInt()
       }
     }
   }

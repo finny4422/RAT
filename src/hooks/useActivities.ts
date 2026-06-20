@@ -1,11 +1,8 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { DeviceEventEmitter } from 'react-native';
 
-import {
-  activityLogService,
-  activityService,
-  appLifecycleService,
-  type VisibleActivity,
-} from '@/services';
+import { activityService, completeActivityWithLifecycleSync, ACTIVITIES_CHANGED_EVENT, type VisibleActivity } from '@/services';
+import { refreshDatabaseConnection } from '@/database';
 
 type UseActivitiesState = {
   activities: VisibleActivity[];
@@ -56,6 +53,7 @@ export function useActivities() {
     }));
 
     try {
+      await refreshDatabaseConnection();
       const activities = await activityService.getTodaysVisibleActivities();
 
       setState((current: UseActivitiesState) => {
@@ -94,6 +92,7 @@ export function useActivities() {
 
   const silentRefresh = useCallback(async () => {
     try {
+      await refreshDatabaseConnection();
       const activities = await activityService.getTodaysVisibleActivities();
 
       setState((current: UseActivitiesState) => {
@@ -115,6 +114,16 @@ export function useActivities() {
     await loadActivities('initial');
   }, [loadActivities]);
 
+  useEffect(() => {
+    const subscription = DeviceEventEmitter.addListener(ACTIVITIES_CHANGED_EVENT, () => {
+      void refresh();
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [refresh]);
+
   const completeActivity = useCallback(
     async (activityId: string) => {
       setState((current: UseActivitiesState) => ({
@@ -124,8 +133,7 @@ export function useActivities() {
       }));
 
       try {
-        await activityLogService.recordCompletion(activityId);
-        await appLifecycleService.runFullLifecycleSync('completion');
+        await completeActivityWithLifecycleSync(activityId);
         await loadActivities('refresh');
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Failed to complete activity.';

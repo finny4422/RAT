@@ -3,6 +3,7 @@ package com.routinetracker.widget
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.facebook.react.HeadlessJsTaskService
 
 class WidgetCompleteReceiver : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent?) {
@@ -15,6 +16,13 @@ class WidgetCompleteReceiver : BroadcastReceiver() {
       return
     }
 
-    WidgetCompletionHeadlessService.start(context, activityId)
+    val pendingResult = goAsync()
+
+    try {
+      HeadlessJsTaskService.acquireWakeLockNow(context)
+      WidgetCompletionHeadlessService.start(context, activityId)
+    } finally {
+      pendingResult.finish()
+    }
   }
 }
