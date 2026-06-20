@@ -2,6 +2,7 @@ export {
   bootstrapDatabase,
   getDatabase,
   isDatabaseReady,
+  refreshDatabaseConnection,
   shutdownDatabase,
 } from './bootstrap';
 export type { BootstrapResult } from './bootstrap';
